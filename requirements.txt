@@ -1,0 +1,5 @@
+dash>=0.0.1
+psycopg2>=0.0.1
+plotly>=0.0.1
+gunicorn>=0.0.1
+pandas>=0.0.1

@@ -108,6 +108,7 @@ fig2.update_xaxes(title_text="Length of Anime Description")
 fig2.update_yaxes(title_text="Rating")
 
 app = Dash(__name__)
+server = app.server
 
 app.layout = html.Div([
     html.Div([
