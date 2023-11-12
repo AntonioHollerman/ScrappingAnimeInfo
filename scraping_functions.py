@@ -4,12 +4,14 @@ from bs4 import BeautifulSoup
 from collections import namedtuple
 from typing import List
 
-con_info = {
-    'database': 'AnimeDB',
-    'user': 'postgres',
-    'password': 'password'
+db_config = {
+    "host": "dpg-cl83kpqvokcc73arta6g-a.ohio-postgres.render.com",
+    "port": "5432",
+    "database": "animedb_67jg",
+    "user": "animedb_67jg_user",
+    "password": "snOlYgTWY9nhwwPE0RamVnYz5P5zrxT2"
 }
-db_conn = pg2.connect(**con_info)
+db_conn = pg2.connect(**db_config)
 db_cur = db_conn.cursor()
 InfoRow = namedtuple('InfoRow', ['anime_id', 'name', 'description', 'rating', 'studio', 'themes',
                                  'categories', 'eps', 'mins_per_epi'])
@@ -149,6 +151,21 @@ class ScrapeInfo:
                 raise StopIteration
         self.save_index()
         return self.extract_div()
+
+
+class ScrapeReviews:
+    def __init__(self):
+        pass
+
+    def get_reviews(self, pages: int):
+        pass
+
+    @staticmethod
+    def manipulate_html(url) -> str:
+        pass
+
+    def extract_reviews(self, url: str):
+        soup = BeautifulSoup(self.manipulate_html(url), 'html.parser')
 
 
 def create_tables():
