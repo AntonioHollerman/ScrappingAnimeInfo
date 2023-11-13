@@ -3,4 +3,4 @@ psycopg2>=0.0.1
 plotly>=0.0.1
 gunicorn>=0.0.1
 pandas>=0.0.1
-python>=0.0.1
+python==3.10.13
