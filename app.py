@@ -5,9 +5,11 @@ import pandas as pd
 import psycopg2 as pg2
 
 con_info = {
-    'database': 'AnimeDB',
-    'user': 'postgres',
-    'password': 'password'
+    "host": "dpg-cl83kpqvokcc73arta6g-a.ohio-postgres.render.com",
+    "port": "5432",
+    "database": "animedb_67jg",
+    "user": "animedb_67jg_user",
+    "password": "snOlYgTWY9nhwwPE0RamVnYz5P5zrxT2"
 }
 db_conn = pg2.connect(**con_info)
 db_cur = db_conn.cursor()
