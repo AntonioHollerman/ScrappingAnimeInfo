@@ -1,8 +1,6 @@
 # Scrapping Anime Information
 ## Summary 
-Purpose of this project is to extract information on anime from a website to be store in s PostgreSQL database. SQL quires
-are then written on the database to identify valuable information trends on data. Quires are then displayed as visuals
-on a dashboard so that the user can easily identify the trends in correlation with the anime rating.
+The purpose of this project is to extract information on anime from a website to be stored in a PostgreSQL database. SQL queries are then written on the database to identify valuable information trends in data. Quires are then displayed as visuals on a dashboard so that the user can easily identify the trends in correlation with the anime rating.
 
 ## Dash App
 Created a web application to display the data collected through visuals from the plotly library. Two types of visuals are 
