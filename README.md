@@ -1,4 +1,5 @@
 # Scrapping Anime Information
+###### Website Scrapped: [Anime List](https://myanimelist.net/anime.php)
 ## Summary 
 The purpose of this project is to extract information on anime from a website to be stored in a PostgreSQL database. SQL queries are then written on the database to identify valuable information trends in data. Quires are then displayed as visuals on a dashboard so that the user can easily identify the trends in correlation with the anime rating.
 
@@ -163,4 +164,3 @@ for genre in all_genres:
 
 ## Data Visualization
 Using basic call backs, data graphs are updated in real time in the web application. 
-###### Website Scrapped: [Anime List](https://myanimelist.net/anime.php)
