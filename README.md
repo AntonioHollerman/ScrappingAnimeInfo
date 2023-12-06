@@ -163,3 +163,4 @@ for genre in all_genres:
 
 ## Data Visualization
 Using basic call backs, data graphs are updated in real time in the web application. 
+###### Website Scrapped: [Anime List](https://myanimelist.net/anime.php)
