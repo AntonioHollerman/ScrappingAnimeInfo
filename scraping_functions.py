@@ -1,23 +1,28 @@
 import psycopg2 as pg2
 import requests
+from selectolax.parser import HTMLParser
 from bs4 import BeautifulSoup
 from collections import namedtuple
+from playwright.sync_api import sync_playwright, TimeoutError
 from typing import List
+import numpy as np
 
 db_config = {
-    "host": "dpg-cl83kpqvokcc73arta6g-a.ohio-postgres.render.com",
+    "host": "ec2-52-21-233-246.compute-1.amazonaws.com",
     "port": "5432",
-    "database": "animedb_67jg",
-    "user": "animedb_67jg_user",
-    "password": "snOlYgTWY9nhwwPE0RamVnYz5P5zrxT2"
+    "database": "d2mesehjpmjmcp",
+    "user": "raqeoqrwmvhshw",
+    "password": "2d9ed34ce720f4db81fda384353deca0c6e1d1ff91a64cf2aaf3d27cbfbc0576"
 }
 db_conn = pg2.connect(**db_config)
 db_cur = db_conn.cursor()
 InfoRow = namedtuple('InfoRow', ['anime_id', 'name', 'description', 'rating', 'studio', 'themes',
                                  'categories', 'eps', 'mins_per_epi'])
-InforScrapingIndexRow = namedtuple('InforScrapingIndexRow', ['web_id', 'category', 'page_index',
-                                                             'div_index'])
+InfoScrapingIndexRow = namedtuple('InfoScrapingIndexRow', ['web_id', 'category', 'page_index',
+                                                           'div_index'])
 UrlScrapedRow = namedtuple('UrlScrapedRow', ['web_id', 'web_url'])
+ReviewRow = namedtuple('ReviewRow', ['anime_id', 'username', 'recommendation', 'review'])
+
 
 map_categories = {
     'Action': '1',
@@ -86,8 +91,8 @@ class ScrapeInfo:
         if self.scraping_index is None:
             self.scraping_index = {}
         self.scraping_index[self._category] = {'page_index': self._next_page, 'div_index': self._next_div}
-        row = InforScrapingIndexRow(find_url_scraped_index(self.current_url), self._category, self._next_page,
-                                    self._next_div)
+        row = InfoScrapingIndexRow(find_url_scraped_index(self.current_url), self._category, self._next_page,
+                                   self._next_div)
         insert_info_scraping_index(row)
 
     def extract_div(self):
@@ -155,17 +160,69 @@ class ScrapeInfo:
 
 class ScrapeReviews:
     def __init__(self):
-        pass
+        self.divs_filtered = []
+        self.page_index: int = 1
 
-    def get_reviews(self, pages: int):
-        pass
+    def load_page(self, url):
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch()
+            context = browser.new_context()
+            page = context.new_page()
+
+            try:
+                page.goto(url)
+                page.wait_for_load_state("networkidle")
+
+                html = page.content()
+            except TimeoutError:
+                return 404
+            finally:
+                browser.close()
+
+        tree = HTMLParser(html)
+        self.divs_filtered = tree.css("div[class='review-element js-review-element']")
+        return 200
 
     @staticmethod
-    def manipulate_html(url) -> str:
-        pass
+    def extract_div(div) -> ReviewRow:
+        try:
+            name = div.css_first("a[data-ga-click-type='review-anime-title']").text().strip()
+        except AttributeError:
+            name = np.nan
 
-    def extract_reviews(self, url: str):
-        soup = BeautifulSoup(self.manipulate_html(url), 'html.parser')
+        try:
+            username = div.css_first("div.username > a").text().strip()
+        except AttributeError:
+            username = np.nan
+
+        try:
+            recommendation = div.css_first("div.js-btn-label").text().strip()
+        except AttributeError:
+            recommendation = np.nan
+
+        try:
+            review = div.css_first("div.text").text().replace("\n", "").replace("  ", "")
+        except AttributeError:
+            review = np.nan
+
+        return ReviewRow(find_info_id(name), username, recommendation, review)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if len(self.divs_filtered) != 0:
+            review_extracted = self.extract_div(self.divs_filtered.pop(0))
+            insert_review_row(review_extracted)
+            return review_extracted
+        else:
+            url = ("https://myanimelist.net/reviews.php?t=anime&filter_check=&filter_hide=&preliminary=on&spoiler=on&"
+                   f"p={self.page_index}")
+            self.page_index += 1
+            stat_code = self.load_page(url)
+            if len(self.divs_filtered) == 0 or stat_code == 404:
+                raise StopIteration
+            return self.__next__()
 
 
 def create_tables():
@@ -187,7 +244,12 @@ CREATE TABLE IF NOT EXISTS info_scraping_index(
     web_id INTEGER REFERENCES url_scraped(web_id),
     category TEXT,
     page_index INTEGER,
-    div_index INTEGER);"""
+    div_index INTEGER);
+CREATE TABLE IF NOT EXISTS reviews(
+    anime_id INTEGER REFERENCES animeinfo(anime_id), 
+    username TEXT,
+    recommendation TEXT,
+    review TEXT);"""
     db_cur.execute(sql_query)
     db_conn.commit()
 
@@ -223,7 +285,7 @@ def insert_url_scraped(url):
         db_conn.commit()
 
 
-def insert_info_scraping_index(new_row: InforScrapingIndexRow):
+def insert_info_scraping_index(new_row: InfoScrapingIndexRow):
     db_cur.execute("SELECT DISTINCT category FROM info_scraping_index")
     categories_stored = set(map(lambda x: x[0], db_cur.fetchall()))
     if new_row.category in categories_stored:
@@ -243,7 +305,9 @@ def find_info_id(name):
     db_cur.execute(f"SELECT anime_id FROM animeinfo WHERE name = '{name}'")
     id_ = db_cur.fetchall()
     if len(id_) == 0:
-        return -1
+        db_cur.execute(f"INSERT INTO animeinfo(name) VALUES ({name})")
+        db_conn.commit()
+        return find_info_id(name)
     else:
         return id_[0][0]
 
@@ -262,7 +326,7 @@ def find_url_scraped_index(url: str):
 
 def extract_info_index():
     db_cur.execute('SELECT web_id, category, page_index, div_index FROM info_scraping_index')
-    info: List[InforScrapingIndexRow] = [InforScrapingIndexRow(*row) for row in db_cur.fetchall()]
+    info: List[InfoScrapingIndexRow] = [InfoScrapingIndexRow(*row) for row in db_cur.fetchall()]
     if info:
         holding_dict = {}
         for category in info:
@@ -270,3 +334,10 @@ def extract_info_index():
         return holding_dict
     else:
         return dict()
+
+
+def insert_review_row(new_row: ReviewRow):
+    id_, name, recommended, review = new_row
+    db_cur.execute("INSERT INTO reviews(anime_id, username, recommendation, review) "
+                   f"VALUES ({id_}, {name}, {recommended}, {review})")
+    db_conn.commit()
