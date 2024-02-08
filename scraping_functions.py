@@ -6,14 +6,8 @@ from collections import namedtuple
 from playwright.sync_api import sync_playwright, TimeoutError
 from typing import List
 import numpy as np
+from db_keys import db_config
 
-db_config = {
-    "host": "ec2-52-21-233-246.compute-1.amazonaws.com",
-    "port": "5432",
-    "database": "d2mesehjpmjmcp",
-    "user": "raqeoqrwmvhshw",
-    "password": "2d9ed34ce720f4db81fda384353deca0c6e1d1ff91a64cf2aaf3d27cbfbc0576"
-}
 db_conn = pg2.connect(**db_config)
 db_cur = db_conn.cursor()
 InfoRow = namedtuple('InfoRow', ['anime_id', 'name', 'description', 'rating', 'studio', 'themes',
@@ -100,7 +94,7 @@ class ScrapeInfo:
         self._next_div += 1
 
         title = current_div.find('a', attrs={'class': ['link-title']}).get_text().replace("'", "''")
-        par = current_div.find("p", attrs={'class': ['preline']}).get_text().replace("'", "''")
+        desc = current_div.find("p", attrs={'class': ['preline']}).get_text().replace("'", "''")
 
         rating = current_div.find("div", attrs={'title': 'Score'})
         rating = str(rating).strip()
@@ -142,7 +136,7 @@ class ScrapeInfo:
         if not mins:
             mins = 'NULL'
 
-        current_anime = InfoRow(find_info_id(title), title, par, rating, studio, themes, categories, eps, mins)
+        current_anime = InfoRow(find_info_id(title), title, desc, rating, studio, themes, categories, eps, mins)
         return current_anime
 
     def __iter__(self):

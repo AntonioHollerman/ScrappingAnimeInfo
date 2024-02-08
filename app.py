@@ -3,14 +3,8 @@ from statistics import mean
 import plotly.express as px
 import pandas as pd
 import psycopg2 as pg2
+from db_keys import db_config
 
-db_config = {
-    "host": "ec2-52-21-233-246.compute-1.amazonaws.com",
-    "port": "5432",
-    "database": "d2mesehjpmjmcp",
-    "user": "raqeoqrwmvhshw",
-    "password": "2d9ed34ce720f4db81fda384353deca0c6e1d1ff91a64cf2aaf3d27cbfbc0576"
-}
 db_conn = pg2.connect(**db_config)
 db_cur = db_conn.cursor()
 db_cur.execute("SELECT * FROM animeinfo WHERE rating is not null")
