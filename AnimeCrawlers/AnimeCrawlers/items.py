@@ -4,8 +4,6 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-hi = ['anime_id', 'name', 'description', 'rating', 'studio', 'themes',
-      'categories', 'eps', 'mins_per_epi']
 
 
 class InfoCrawlerItem(scrapy.Item):
@@ -20,7 +18,7 @@ class InfoCrawlerItem(scrapy.Item):
 
 
 class DescCrawlerItem(scrapy.Item):
-    name = scrapy.Field()
+    title = scrapy.Field()
     username = scrapy.Field()
     recommendation = scrapy.Field()
     review = scrapy.Field()
