@@ -8,6 +8,20 @@
 from itemadapter import ItemAdapter
 
 
-class AnimecrawlersPipeline:
+class FilterPipeline:
     def process_item(self, item, spider):
         return item
+
+
+class SaveToDb:
+    def __init__(self):
+        pass
+
+    def open_spider(self, spider):
+        pass
+
+    def process_item(self, item, spider):
+        return item
+
+    def close_spider(self, spider):
+        pass
