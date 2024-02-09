@@ -10,7 +10,7 @@ SCRAPE_PAGES = 100
 class DescriptionsSpider(scrapy.Spider):
     name = "Descriptions"
     allowed_domains = ["myanimelist.net"]
-    start_urls = ["https://myanimelist.net"]
+    start_urls = []
 
     def start_requests(self) -> Iterable[Request]:
         for i in range(1, SCRAPE_PAGES + 1):
