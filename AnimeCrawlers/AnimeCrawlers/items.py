@@ -6,7 +6,6 @@
 import scrapy
 from itemloaders.processors import TakeFirst, MapCompose
 from w3lib.html import remove_tags
-import numpy as np
 from selectolax.parser import HTMLParser
 
 
@@ -18,7 +17,7 @@ def return_float(string: str):
     try:
         return float(string)
     except ValueError:
-        return np.nan
+        return "NULL"
 
 
 def extract_themes(values: list):
@@ -27,10 +26,10 @@ def extract_themes(values: list):
             div = HTMLParser(node)
             themes = [a.text() for a in div.css('a')]
             if not themes:
-                return np.nan
+                return "NULL"
             return ', '.join(themes).replace("'", "''")
 
-    return np.nan
+    return "NULL"
 
 
 def extract_studio(values: list):
@@ -39,10 +38,10 @@ def extract_studio(values: list):
             div = HTMLParser(node)
             a_tag = div.css_first('a')
             if a_tag is None:
-                return np.nan
+                return "NULL"
             return a_tag.text().replace("'", "''")
 
-    return np.nan
+    return "NULL"
 
 
 def extract_categories(string: str):
@@ -56,14 +55,14 @@ def extract_eps(string: str):
     try:
         return int(eps)
     except ValueError:
-        return np.nan
+        return "NULL"
 
 
 def take_second(values):
     for val in values[1:]:
         if isinstance(val, int):
             return val
-    return np.nan
+    return "NULL"
 
 
 class InfoCrawlerItem(scrapy.Item):
