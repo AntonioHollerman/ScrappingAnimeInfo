@@ -10,8 +10,8 @@ import numpy as np
 from selectolax.parser import HTMLParser
 
 
-def clear_white_space(string: str):
-    return string.strip().replace("  ", "").replace("\n", "")
+def format_string(string: str):
+    return string.strip().replace("  ", "").replace("\n", "").replace("'", "''")
 
 
 def return_float(string: str):
@@ -68,15 +68,15 @@ def take_second(values):
 
 class InfoCrawlerItem(scrapy.Item):
     title = scrapy.Field(
-        input_processor=MapCompose(remove_tags, clear_white_space),
+        input_processor=MapCompose(remove_tags, format_string),
         output_processor=TakeFirst()
     )
     description = scrapy.Field(
-        input_processor=MapCompose(remove_tags, clear_white_space),
+        input_processor=MapCompose(remove_tags, format_string),
         output_processor=TakeFirst()
     )
     rating = scrapy.Field(
-        input_processor=MapCompose(remove_tags, clear_white_space, return_float),
+        input_processor=MapCompose(remove_tags, format_string, return_float),
         output_processor=TakeFirst()
     )
     studio = scrapy.Field(
@@ -101,18 +101,18 @@ class InfoCrawlerItem(scrapy.Item):
 
 class DescCrawlerItem(scrapy.Item):
     title = scrapy.Field(
-        input_processor=MapCompose(remove_tags, clear_white_space),
+        input_processor=MapCompose(remove_tags, format_string),
         output_processor=TakeFirst()
     )
     username = scrapy.Field(
-        input_processor=MapCompose(remove_tags, clear_white_space),
+        input_processor=MapCompose(remove_tags, format_string),
         output_processor=TakeFirst()
     )
     recommendation = scrapy.Field(
-        input_processor=MapCompose(remove_tags, clear_white_space),
+        input_processor=MapCompose(remove_tags, format_string),
         output_processor=TakeFirst()
     )
     review = scrapy.Field(
-        input_processor=MapCompose(remove_tags, clear_white_space),
+        input_processor=MapCompose(remove_tags, format_string),
         output_processor=TakeFirst()
     )
