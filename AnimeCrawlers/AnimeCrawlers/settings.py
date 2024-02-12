@@ -63,8 +63,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "AnimeCrawlers.pipelines.FilterPipline": 300,
-    # "AnimeCrawlers.pipelines.SaveToDb": 500,
+    "AnimeCrawlers.pipelines.InfoToDb": 500,
+#    "AnimeCrawlers.pipelines.DescToDb": 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
