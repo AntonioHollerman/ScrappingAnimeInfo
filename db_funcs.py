@@ -129,3 +129,11 @@ def insert_review_row(new_row: ReviewRow):
     db_cur.execute("INSERT INTO reviews(anime_id, username, recommendation, review) "
                    f"VALUES ({id_}, '{name}', '{recommended}', '{review}')")
     db_conn.commit()
+
+
+def check_desc_null():
+    pass
+
+
+def check_info_null():
+    pass
