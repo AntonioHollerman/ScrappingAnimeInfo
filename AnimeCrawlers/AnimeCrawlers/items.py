@@ -28,7 +28,7 @@ def extract_themes(values: list):
             themes = [a.text() for a in div.css('a')]
             if not themes:
                 return np.nan
-            return ', '.join(themes)
+            return ', '.join(themes).replace("'", "''")
 
     return np.nan
 
@@ -40,7 +40,7 @@ def extract_studio(values: list):
             a_tag = div.css_first('a')
             if a_tag is None:
                 return np.nan
-            return a_tag.text()
+            return a_tag.text().replace("'", "''")
 
     return np.nan
 
@@ -48,7 +48,7 @@ def extract_studio(values: list):
 def extract_categories(string: str):
     node = HTMLParser(string)
     categories = [a.text() for a in node.css('a')]
-    return ", ".join(categories)
+    return ", ".join(categories).replace("'", "''")
 
 
 def extract_eps(string: str):
