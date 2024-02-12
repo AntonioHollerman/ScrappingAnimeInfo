@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS reviews(
     db_conn.commit()
 
 
-def update_db(new_row: InfoRow):
+def insert_info_row(new_row: InfoRow):
     db_cur.execute("SELECT name FROM animeinfo")
     names_in_db = set(map(lambda x: x[0], db_cur.fetchall()))
     if new_row.name in names_in_db:
@@ -93,7 +93,7 @@ def find_info_id(name):
     db_cur.execute(f"SELECT anime_id FROM animeinfo WHERE name = '{name}'")
     id_ = db_cur.fetchall()
     if len(id_) == 0:
-        db_cur.execute(f"INSERT INTO animeinfo(name) VALUES ({name})")
+        db_cur.execute(f"INSERT INTO animeinfo(name) VALUES ('{name}')")
         db_conn.commit()
         return find_info_id(name)
     else:
@@ -127,5 +127,5 @@ def extract_info_index():
 def insert_review_row(new_row: ReviewRow):
     id_, name, recommended, review = new_row
     db_cur.execute("INSERT INTO reviews(anime_id, username, recommendation, review) "
-                   f"VALUES ({id_}, {name}, {recommended}, {review})")
+                   f"VALUES ({id_}, '{name}', '{recommended}', '{review}')")
     db_conn.commit()
