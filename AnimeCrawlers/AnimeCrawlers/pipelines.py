@@ -30,11 +30,12 @@ class InfoToDb:
         return item
 
     def close_spider(self, spider):
+        check_info_null()
         db_cur.close()
         db_conn.close()
 
 
-class DescToDb:
+class ReviewToDb:
     def __init__(self):
         db_conn.set_session(autocommit=True)
 
@@ -47,5 +48,6 @@ class DescToDb:
         return item
 
     def close_spider(self, spider):
+        check_review_null()
         db_cur.close()
         db_conn.close()

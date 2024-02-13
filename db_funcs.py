@@ -146,9 +146,35 @@ def insert_review_row(new_row: ReviewRow):
     db_conn.commit()
 
 
-def check_desc_null():
-    pass
+def check_review_null():
+    db_cur.execute("UPDATE reviews SET "
+                   "username = NULL "
+                   "WHERE username = 'NULL'")
+
+    db_cur.execute("UPDATE reviews SET "
+                   "recommendation = NULL "
+                   "WHERE recommendation = 'NULL'")
+
+    db_cur.execute("UPDATE reviews SET "
+                   "review = NULL "
+                   "WHERE review = 'NULL'")
+    db_conn.commit()
 
 
 def check_info_null():
-    pass
+    db_cur.execute("UPDATE animeinfo SET "
+                   "description = NULL "
+                   "WHERE description = 'NULL'")
+
+    db_cur.execute("UPDATE animeinfo SET "
+                   "studio = NULL "
+                   "WHERE studio = 'NULL'")
+
+    db_cur.execute("UPDATE animeinfo SET "
+                   "themes = NULL "
+                   "WHERE themes = 'NULL'")
+
+    db_cur.execute("UPDATE animeinfo SET "
+                   "categories = NULL "
+                   "WHERE categories = 'NULL'")
+    db_conn.commit()
