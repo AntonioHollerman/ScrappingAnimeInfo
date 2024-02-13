@@ -10,7 +10,7 @@ from selectolax.parser import HTMLParser
 
 
 def format_string(string: str):
-    return string.strip().replace("  ", "").replace("\n", "").replace("'", "''")
+    return string.strip().replace("  ", "").replace("\n", "")
 
 
 def return_float(string: str):
@@ -27,7 +27,7 @@ def extract_themes(values: list):
             themes = [a.text() for a in div.css('a')]
             if not themes:
                 return "NULL"
-            return ', '.join(themes).replace("'", "''")
+            return ', '.join(themes)
 
     return "NULL"
 
@@ -39,7 +39,7 @@ def extract_studio(values: list):
             a_tag = div.css_first('a')
             if a_tag is None:
                 return "NULL"
-            return a_tag.text().replace("'", "''")
+            return a_tag.text()
 
     return "NULL"
 
@@ -47,7 +47,7 @@ def extract_studio(values: list):
 def extract_categories(string: str):
     node = HTMLParser(string)
     categories = [a.text() for a in node.css('a')]
-    return ", ".join(categories).replace("'", "''")
+    return ", ".join(categories)
 
 
 def extract_eps(string: str):
