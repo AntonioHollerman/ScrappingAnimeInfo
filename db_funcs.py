@@ -46,7 +46,7 @@ def insert_info_row(new_row: InfoRow):
     db_cur.execute("SELECT name FROM animeinfo")
     names_in_db = set(map(lambda x: x[0], db_cur.fetchall()))
     if new_row.name in names_in_db:
-        db_cur.execute(f"UPDATE animeinfo SET "
+        db_cur.execute("UPDATE animeinfo SET "
                        "description = '{}',".format(new_row.description.replace("'", "''")) +
                        "rating = {},".format(new_row.rating) +
                        "studio = '{}',".format(new_row.studio.replace("'", "''")) +
@@ -56,11 +56,20 @@ def insert_info_row(new_row: InfoRow):
                        "mins_per_epi = {} ".format(new_row.mins_per_epi) +
                        "WHERE name = '{}'".format(new_row.name.replace("'", "''")))
     else:
+        format1 = (new_row.name.description.replace("'", "''"),
+                   new_row.description.description.replace("'", "''"),
+                   new_row.rating,
+                   new_row.studio.description.replace("'", "''"))
+
+        format2 = (new_row.themes.description.replace("'", "''"),
+                   new_row.categories.description.replace("'", "''"),
+                   new_row.eps,
+                   new_row.mins_per_epi)
         db_cur.execute("INSERT INTO "
                        "animeinfo(name, description, rating, studio, themes, categories, eps, mins_per_epi) "
                        "VALUES "
-                       f"('{new_row.name}', '{new_row.description}', {new_row.rating}, '{new_row.studio}', "
-                       f"'{new_row.themes}', '{new_row.categories}', {new_row.eps}, {new_row.mins_per_epi})")
+                       "('{}', '{}', {}, '{}', ".format(*format1) +
+                       "'{}', '{}', {}, {})".format(*format2))
     db_conn.commit()
 
 
@@ -69,7 +78,7 @@ def insert_url_scraped(url):
     db_cur.execute(query)
     urls_stored = set(map(lambda x: x[0], db_cur.fetchall()))
     if url not in urls_stored:
-        db_cur.execute(f"INSERT INTO url_scraped(web_url) VALUES ('{url}')")
+        db_cur.execute("INSERT INTO url_scraped(web_url) VALUES ('{}')".format(url.replace("'", "''")))
         db_conn.commit()
 
 
@@ -78,22 +87,25 @@ def insert_info_scraping_index(new_row: InfoScrapingIndexRow):
     categories_stored = set(map(lambda x: x[0], db_cur.fetchall()))
     if new_row.category in categories_stored:
         db_cur.execute("UPDATE info_scraping_index SET "
-                       f"web_id = {new_row.web_id}, "
-                       f"category = '{new_row.category}', "
-                       f"page_index = {new_row.page_index}, "
-                       f"div_index = {new_row.div_index} "
-                       f"WHERE category = '{new_row.category}'")
+                       "web_id = {}, ".format(new_row.web_id.replace("'", "''")) +
+                       "category = '{}', ".format(new_row.category.replace("'", "''")) +
+                       "page_index = {}, ".format(new_row.page_index) +
+                       "div_index = {} ".format(new_row.div_index) +
+                       "WHERE category = '{}'".format(new_row.category.replace("'", "''")))
     else:
         db_cur.execute("INSERT INTO info_scraping_index(web_id, category, page_index, div_index) VALUES "
-                       f"({new_row.web_id}, '{new_row.category}', {new_row.page_index}, {new_row.div_index})")
+                       "({}, '{}', {}, {})".format(new_row.web_id,
+                                                   new_row.category.replace("'", "''"),
+                                                   new_row.page_index,
+                                                   new_row.div_index))
     db_conn.commit()
 
 
-def find_info_id(name):
-    db_cur.execute(f"SELECT anime_id FROM animeinfo WHERE name = '{name}'")
+def find_info_id(name: str):
+    db_cur.execute("SELECT anime_id FROM animeinfo WHERE name = '{}'".format(name.replace("'", "''")))
     id_ = db_cur.fetchall()
     if len(id_) == 0:
-        db_cur.execute(f"INSERT INTO animeinfo(name) VALUES ('{name}')")
+        db_cur.execute("INSERT INTO animeinfo(name) VALUES ('{}')".format(name.replace("'", "''")))
         db_conn.commit()
         return find_info_id(name)
     else:
@@ -101,11 +113,11 @@ def find_info_id(name):
 
 
 def find_url_scraped_index(url: str):
-    db_cur.execute(f"SELECT web_id FROM url_scraped WHERE web_url = '{url}'")
+    db_cur.execute("SELECT web_id FROM url_scraped WHERE web_url = '{}'".format(url.replace("'", "''")))
     id_ = db_cur.fetchall()
     if len(id_) == 0:
         insert_url_scraped(url)
-        db_cur.execute(f"SELECT web_id FROM url_scraped WHERE web_url = '{url}'")
+        db_cur.execute("SELECT web_id FROM url_scraped WHERE web_url = '{}'".format(url.replace("'", "''")))
         id_ = db_cur.fetchall()
         return id_[0][0]
     else:
@@ -127,7 +139,10 @@ def extract_info_index():
 def insert_review_row(new_row: ReviewRow):
     id_, name, recommended, review = new_row
     db_cur.execute("INSERT INTO reviews(anime_id, username, recommendation, review) "
-                   f"VALUES ({id_}, '{name}', '{recommended}', '{review}')")
+                   "VALUES ({}, '{}', '{}', '{}')".format(id_,
+                                                          name.replace("'", "''"),
+                                                          recommended.replace("'", "''"),
+                                                          review.replace("'", "''")))
     db_conn.commit()
 
 
