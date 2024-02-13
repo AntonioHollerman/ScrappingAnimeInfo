@@ -47,14 +47,14 @@ def insert_info_row(new_row: InfoRow):
     names_in_db = set(map(lambda x: x[0], db_cur.fetchall()))
     if new_row.name in names_in_db:
         db_cur.execute(f"UPDATE animeinfo SET "
-                       f"description = '{new_row.description}',"
-                       f"rating = {new_row.rating},"
-                       f"studio = '{new_row.studio}',"
-                       f"themes = '{new_row.themes}',"
-                       f"categories = '{new_row.categories}',"
-                       f"eps = {new_row.eps},"
-                       f"mins_per_epi = {new_row.mins_per_epi} "
-                       f"WHERE name = '{new_row.name}'")
+                       "description = '{}',".format(new_row.description.replace("'", "''")) +
+                       "rating = {},".format(new_row.rating) +
+                       "studio = '{}',".format(new_row.studio.replace("'", "''")) +
+                       "themes = '{}',".format(new_row.themes.replace("'", "''")) +
+                       "categories = '{}',".format(new_row.categories.replace("'", "''")) +
+                       "eps = {}, ".format(new_row.eps) +
+                       "mins_per_epi = {} ".format(new_row.mins_per_epi) +
+                       "WHERE name = '{}'".format(new_row.name.replace("'", "''")))
     else:
         db_cur.execute("INSERT INTO "
                        "animeinfo(name, description, rating, studio, themes, categories, eps, mins_per_epi) "
