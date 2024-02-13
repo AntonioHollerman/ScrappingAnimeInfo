@@ -23,7 +23,7 @@ headers = {
 
 
 class DescriptionsSpider(scrapy.Spider):
-    name = "Descriptions"
+    name = "ReviewSpider"
     allowed_domains = ["myanimelist.net"]
     start_urls = []
 
