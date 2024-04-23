@@ -131,7 +131,7 @@ def insert_info_scraping_index(new_row: InfoScrapingIndexRow):
     if new_row.category in categories_stored:
         # Updates category if it exists
         db_cur.execute("UPDATE info_scraping_index SET "
-                       "web_id = {}, ".format(new_row.web_id.replace("'", "''")) +
+                       "web_id = {}, ".format(new_row.web_id) +
                        "category = '{}', ".format(new_row.category.replace("'", "''")) +
                        "page_index = {}, ".format(new_row.page_index) +
                        "div_index = {} ".format(new_row.div_index) +
