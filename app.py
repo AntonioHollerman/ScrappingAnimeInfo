@@ -2,20 +2,12 @@ from dash import Dash, html, dcc, Input, Output, callback
 from statistics import mean
 import plotly.express as px
 import pandas as pd
-import psycopg2 as pg2
-from db_keys import db_config
 
-db_conn = pg2.connect(**db_config)
-db_cur = db_conn.cursor()
-db_cur.execute("SELECT * FROM animeinfo WHERE rating is not null")
-df = pd.DataFrame(db_cur.fetchall())
+
+df = pd.read_csv("AnimeinfoOutput.csv")
 df.columns = ['anime_id', 'anime_name', 'description', 'rating', 'studio', 'themes', 'categories', 'eps',
               'mins_per_epi']
 df.set_index('anime_id', inplace=True)
-
-db_conn.close()
-db_cur.close()
-
 
 def get_cat_data(x_input, slider_val):
     min_, max_ = slider_val
